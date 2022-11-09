@@ -71,6 +71,8 @@ class CameraFeedManager: NSObject {
   private var cameraConfiguration: CameraConfiguration = .failed
   private lazy var videoDataOutput = AVCaptureVideoDataOutput()
   private var isSessionRunning = false
+  private var assetReader: AVAssetReader?
+  private var assetReaderTrackOutput: AVAssetReaderTrackOutput?
 
   // MARK: CameraFeedManagerDelegate
   weak var delegate: CameraFeedManagerDelegate?
@@ -82,7 +84,8 @@ class CameraFeedManager: NSObject {
 
     // Initializes the session
     session.sessionPreset = .high
-    self.previewView.previewLayer.videoGravity = .resizeAspectFill
+    self.previewView.previewLayer.videoGravity = .resizeAspect
+    configLocalVideo()
     self.attemptToConfigureSession()
   }
 

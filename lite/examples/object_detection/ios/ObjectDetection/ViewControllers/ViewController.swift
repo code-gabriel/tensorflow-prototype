@@ -90,7 +90,8 @@ class ViewController: UIViewController {
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     changeBottomViewState()
-    cameraFeedManager.checkCameraConfigurationAndStartSession()
+      cameraFeedManager.beginReading()
+    //cameraFeedManager.checkCameraConfigurationAndStartSession()
   }
 
   override func viewWillDisappear(_ animated: Bool) {
