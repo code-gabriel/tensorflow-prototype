@@ -118,6 +118,15 @@ class CameraFeedManager: NSObject {
         }
 
         reader.add(assetReaderTrackOutput)
+
+        do {
+            let timebase = try CMTimebase(sourceClock: CMClockGetHostTimeClock())
+            try timebase.setTime(CMTime.zero)
+            try timebase.setRate(1.0)
+            previewView.previewLayer.controlTimebase = timebase
+        } catch {
+            print("Could not configure controlTimebase.")
+        }
     }
 
     func beginReading() {
