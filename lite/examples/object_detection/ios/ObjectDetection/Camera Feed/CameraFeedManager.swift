@@ -127,4 +127,14 @@ class CameraFeedManager: NSObject {
         }
     }
 
+    func stopReading() {
+        previewView.previewLayer.stopRequestingMediaData()
+
+        guard let reader = assetReader else {
+            fatalError("assetReader unexpectedly nil.")
+        }
+
+        reader.cancelReading()
+    }
+
 }
