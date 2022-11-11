@@ -23,31 +23,6 @@ protocol CameraFeedManagerDelegate: AnyObject {
    */
   func didOutput(pixelBuffer: CVPixelBuffer)
 
-  /**
-   This method intimates that the camera permissions have been denied.
-   */
-  func presentCameraPermissionsDeniedAlert()
-
-  /**
-   This method intimates that there was an error in video configuration.
-   */
-  func presentVideoConfigurationErrorAlert()
-
-  /**
-   This method intimates that a session runtime error occurred.
-   */
-  func sessionRunTimeErrorOccurred()
-
-  /**
-   This method intimates that the session was interrupted.
-   */
-  func sessionWasInterrupted(canResumeManually resumeManually: Bool)
-
-  /**
-   This method intimates that the session interruption has ended.
-   */
-  func sessionInterruptionEnded()
-
 }
 
 /**
