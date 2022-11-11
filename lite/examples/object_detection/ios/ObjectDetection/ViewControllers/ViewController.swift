@@ -103,30 +103,6 @@ class ViewController: UIViewController {
     return .lightContent
   }
 
-  // MARK: Button Actions
-  @IBAction func onClickResumeButton(_ sender: Any) {
-    cameraFeedManager.resumeInterruptedSession { (complete) in
-
-      if complete {
-        self.resumeButton.isHidden = true
-        self.cameraUnavailableLabel.isHidden = true
-      } else {
-        self.presentUnableToResumeSessionAlert()
-      }
-    }
-  }
-
-  func presentUnableToResumeSessionAlert() {
-    let alert = UIAlertController(
-      title: "Unable to Resume Session",
-      message: "There was an error while attempting to resume session.",
-      preferredStyle: .alert
-    )
-    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-
-    self.present(alert, animated: true)
-  }
-
   // MARK: Storyboard Segue Handlers
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     super.prepare(for: segue, sender: sender)
@@ -192,63 +168,6 @@ extension ViewController: CameraFeedManagerDelegate {
       self.detect(pixelBuffer: pixelBuffer)
       self.isInferenceQueueBusy = false
     }
-  }
-
-  // MARK: Session Handling Alerts
-  func sessionRunTimeErrorOccurred() {
-    // Handles session run time error by updating the UI and providing a button if session can be manually resumed.
-    self.resumeButton.isHidden = false
-  }
-
-  func sessionWasInterrupted(canResumeManually resumeManually: Bool) {
-    // Updates the UI when session is interrupted.
-    if resumeManually {
-      self.resumeButton.isHidden = false
-    } else {
-      self.cameraUnavailableLabel.isHidden = false
-    }
-  }
-
-  func sessionInterruptionEnded() {
-    // Updates UI once session interruption has ended.
-    if !self.cameraUnavailableLabel.isHidden {
-      self.cameraUnavailableLabel.isHidden = true
-    }
-
-    if !self.resumeButton.isHidden {
-      self.resumeButton.isHidden = true
-    }
-  }
-
-  func presentVideoConfigurationErrorAlert() {
-    let alertController = UIAlertController(
-      title: "Configuration Failed", message: "Configuration of camera has failed.",
-      preferredStyle: .alert)
-    let okAction = UIAlertAction(title: "OK", style: .cancel, handler: nil)
-    alertController.addAction(okAction)
-
-    present(alertController, animated: true, completion: nil)
-  }
-
-  func presentCameraPermissionsDeniedAlert() {
-    let alertController = UIAlertController(
-      title: "Camera Permissions Denied",
-      message:
-        "Camera permissions have been denied for this app. You can change this by going to Settings",
-      preferredStyle: .alert)
-
-    let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
-    let settingsAction = UIAlertAction(title: "Settings", style: .default) { (action) in
-
-      UIApplication.shared.open(
-        URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
-    }
-
-    alertController.addAction(cancelAction)
-    alertController.addAction(settingsAction)
-
-    present(alertController, animated: true, completion: nil)
-
   }
 
   /** This method runs the live camera pixelBuffer through tensorFlow to get the result.
