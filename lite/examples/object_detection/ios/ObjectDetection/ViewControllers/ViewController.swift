@@ -18,7 +18,7 @@ import UIKit
 class ViewController: UIViewController {
 
   // MARK: Storyboards Connections
-  @IBOutlet weak var previewView: PreviewView!
+  @IBOutlet weak var previewView: BufferView!
   @IBOutlet weak var overlayView: OverlayView!
   @IBOutlet weak var resumeButton: UIButton!
   @IBOutlet weak var cameraUnavailableLabel: UILabel!

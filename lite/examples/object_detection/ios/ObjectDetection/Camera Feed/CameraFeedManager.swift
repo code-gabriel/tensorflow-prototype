@@ -66,7 +66,7 @@ class CameraFeedManager: NSObject {
 
   // MARK: Camera Related Instance Variables
   private let session: AVCaptureSession = AVCaptureSession()
-  private let previewView: PreviewView
+  private let previewView: BufferView
   private let sessionQueue = DispatchQueue(label: "org.tensorflow.lite.sessionQueue")
   private var cameraConfiguration: CameraConfiguration = .failed
   private lazy var videoDataOutput = AVCaptureVideoDataOutput()
@@ -76,14 +76,12 @@ class CameraFeedManager: NSObject {
   weak var delegate: CameraFeedManagerDelegate?
 
   // MARK: Initializer
-  init(previewView: PreviewView) {
+  init(previewView: BufferView) {
     self.previewView = previewView
     super.init()
 
     // Initializes the session
     session.sessionPreset = .high
-    self.previewView.session = session
-    self.previewView.previewLayer.connection?.videoOrientation = .portrait
     self.previewView.previewLayer.videoGravity = .resizeAspectFill
     self.attemptToConfigureSession()
   }
