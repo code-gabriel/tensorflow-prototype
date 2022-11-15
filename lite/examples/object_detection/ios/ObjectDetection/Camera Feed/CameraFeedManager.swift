@@ -88,6 +88,78 @@ class CameraFeedManager: NSObject {
     self.attemptToConfigureSession()
   }
 
+    func configLocalVideo() {
+        guard let videoUrl = Bundle.main.url(forResource: "basketball-1", withExtension: "mp4") else {
+            fatalError("Could not find local video.")
+        }
+
+        let videoAsset = AVAsset(url: videoUrl)
+
+        do {
+            assetReader = try AVAssetReader(asset: videoAsset)
+        } catch {
+            fatalError("Could not create asset reader.")
+        }
+
+        guard let videoTrack = videoAsset.tracks(withMediaType: .video).first else {
+            fatalError("No video track found.")
+        }
+
+        let assetReaderTrackOutput = AVAssetReaderTrackOutput(
+            track: videoTrack,
+            outputSettings: [String(kCVPixelBufferPixelFormatTypeKey): Int(kCVPixelFormatType_32BGRA)]
+        )
+
+        self.assetReaderTrackOutput = assetReaderTrackOutput
+
+        guard let reader = assetReader, reader.canAdd(assetReaderTrackOutput) else {
+            fatalError("Cannot add assetReaderTrackOutput")
+        }
+
+        reader.add(assetReaderTrackOutput)
+    }
+
+    func beginReading() {
+        guard let reader = assetReader else {
+            fatalError("assetReader unexpectedly nil.")
+        }
+
+        guard reader.startReading() else {
+            fatalError(reader.error?.localizedDescription ?? "unknown reader error")
+        }
+
+        //let videoQueue = DispatchQueue(label: "video read")
+
+        previewView.previewLayer.requestMediaDataWhenReady(on: DispatchQueue.main) { [weak self] in
+            guard let self = self else {
+                return
+            }
+
+            while self.previewView.previewLayer.isReadyForMoreMediaData {
+                if let sampleBuffer = self.assetReaderTrackOutput?.copyNextSampleBuffer() {
+                    self.previewView.previewLayer.enqueue(sampleBuffer)
+
+                    let pixelBuffer: CVPixelBuffer? = CMSampleBufferGetImageBuffer(sampleBuffer)
+
+                    guard let imagePixelBuffer = pixelBuffer else {
+                      return
+                    }
+
+                    // Delegates the pixel buffer to the ViewController.
+                    self.delegate?.didOutput(pixelBuffer: imagePixelBuffer)
+                } else if self.assetReader?.status == .completed {
+                    print("Asset Reader Completed")
+                    self.previewView.previewLayer.stopRequestingMediaData()
+                    self.assetReader?.cancelReading()
+                    break
+                } else {
+                    print("Asset Reader Status: \(self.assetReader!.status)\n\n\n")
+                    print("Asset Reader Error: \(self.assetReader?.error?.localizedDescription ?? "no error")")
+                }
+            }
+        }
+    }
+
   // MARK: Session Start and End methods
 
   /**
