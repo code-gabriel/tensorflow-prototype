@@ -47,7 +47,7 @@ class CameraFeedManager: NSObject {
   }
 
     func configLocalVideo() {
-        guard let videoUrl = Bundle.main.url(forResource: "basketball-1", withExtension: "mp4") else {
+        guard let videoUrl = Bundle.main.url(forResource: "basketball", withExtension: "mp4") else {
             fatalError("Could not find local video.")
         }
 
